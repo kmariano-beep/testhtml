@@ -1,247 +1,56 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Páginas com Temporizador</title>
+    <title>Alternador de Conteúdo</title>
     <style>
-        * {
+        body, html {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            max-width: 600px;
+            height: 100%;
             width: 100%;
+            overflow: hidden;
+            background-color: black;
         }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 40px;
-            font-size: 28px;
-        }
-
-        .links-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-
-        .link-card {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 25px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .link-card:hover {
-            border-color: #667eea;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .link-card h2 {
-            font-size: 16px;
-            color: #555;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .timer {
-            font-size: 48px;
-            font-weight: bold;
-            color: #667eea;
-            margin: 20px 0;
-            font-family: 'Courier New', monospace;
-            min-height: 60px;
-        }
-
-        .timer.first-link {
-            color: #667eea;
-        }
-
-        .timer.second-link {
-            color: #764ba2;
-        }
-
-        .link-button {
-            display: inline-block;
-            padding: 12px 30px;
-            margin-top: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: all 0.3s ease;
+        iframe {
+            width: 100%;
+            height: 100%;
             border: none;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .link-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .link-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: scale(1);
-        }
-
-        .status {
-            font-size: 12px;
-            color: #999;
-            margin-top: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .status.active {
-            color: #28a745;
-        }
-
-        .status.inactive {
-            color: #dc3545;
-        }
-
-        @media (max-width: 600px) {
-            .links-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .timer {
-                font-size: 36px;
-            }
-
-            .container {
-                padding: 25px;
-            }
-
-            h1 {
-                font-size: 22px;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>⏱️ Páginas com Temporizador</h1>
-        
-        <div class="links-grid">
-            <!-- Primeiro Link - 30 minutos -->
-            <div class="link-card">
-                <h2>Link 1</h2>
-                <p style="color: #888; font-size: 13px; margin-bottom: 15px;">YouTube Video</p>
-                <div class="timer first-link" id="timer1">30:00</div>
-                <a href="https://www.youtube.com/watch?v=jfKfPfyJRdk" 
-                   class="link-button" 
-                   id="button1" 
-                   target="_blank">
-                    Abrir Link
-                </a>
-                <div class="status active" id="status1">🟢 ATIVO</div>
-            </div>
 
-            <!-- Segundo Link - 1 minuto -->
-            <div class="link-card">
-                <h2>Link 2</h2>
-                <p style="color: #888; font-size: 13px; margin-bottom: 15px;">Google Test</p>
-                <div class="timer second-link" id="timer2">01:00</div>
-                <a href="https://www.google.com" 
-                   class="link-button" 
-                   id="button2" 
-                   target="_blank">
-                    Abrir Link
-                </a>
-                <div class="status inactive" id="status2">🔴 INATIVO</div>
-            </div>
-        </div>
-    </div>
+    <!-- O iframe que exibirá os conteúdos -->
+    <iframe id="display-frame" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
     <script>
-        // Configuração dos timers
-        const link1Duration = 30 * 60; // 30 minutos em segundos
-        const link2Duration = 1 * 60;  // 1 minuto em segundos
-
-        let link1Time = link1Duration;
-        let link2Time = link2Duration;
-
-        // Referências dos elementos
-        const timer1 = document.getElementById('timer1');
-        const timer2 = document.getElementById('timer2');
-        const button1 = document.getElementById('button1');
-        const button2 = document.getElementById('button2');
-        const status1 = document.getElementById('status1');
-        const status2 = document.getElementById('status2');
-
-        // Função para formatar tempo (MM:SS)
-        function formatTime(seconds) {
-            const minutes = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        }
-
-        // Função para atualizar o timer do link 1
-        function updateLink1Timer() {
-            if (link1Time > 0) {
-                timer1.textContent = formatTime(link1Time);
-                link1Time--;
-                setTimeout(updateLink1Timer, 1000);
-            } else {
-                timer1.textContent = '00:00';
-                button1.disabled = true;
-                status1.textContent = '🔴 EXPIRADO';
-                status1.classList.remove('active');
-                status1.classList.add('inactive');
-            }
-        }
-
-        // Função para atualizar o timer do link 2
-        function updateLink2Timer() {
-            if (link2Time > 0) {
-                timer2.textContent = formatTime(link2Time);
-                link2Time--;
-                setTimeout(updateLink2Timer, 1000);
-            } else {
-                timer2.textContent = '00:00';
-                button2.disabled = true;
-                status2.textContent = '🔴 EXPIRADO';
-                status2.classList.remove('active');
-                status2.classList.add('inactive');
-            }
-        }
-
-        // Iniciar os timers
-        updateLink1Timer();
+        const frame = document.getElementById('display-frame');
         
-        // Aguardar 30 minutos para iniciar o segundo timer
-        setTimeout(function() {
-            status2.textContent = '🟢 ATIVO';
-            status2.classList.remove('inactive');
-            status2.classList.add('active');
-            updateLink2Timer();
-        }, link1Duration * 1000);
+        // URLs dos conteúdos
+        // Nota: Adicionamos o parâmetro "autoplay=1&mute=1" para garantir que o vídeo rode sozinho.
+        const videoURL = "https://www.youtube.com/embed/LGYSLMCFOJU?autoplay=1&mute=1&playlist=LGYSLMCFOJU&loop=1";
+        const siteURL = "https://www.google.com/search?q=tempo+agora&igu=1"; 
+
+        // Tempos em milissegundos
+        const tempoVideo = 30 * 60 * 1000; // 30 minutos
+        const tempoSite = 1 * 60 * 1000;  // 1 minuto
+
+        function carregarVideo() {
+            frame.src = videoURL;
+            console.log("Exibindo vídeo por 30 minutos...");
+            setTimeout(carregarSite, tempoVideo);
+        }
+
+        function carregarSite() {
+            frame.src = siteURL;
+            console.log("Exibindo site por 1 minuto...");
+            setTimeout(carregarVideo, tempoSite);
+        }
+
+        // Inicia o ciclo
+        carregarVideo();
     </script>
 </body>
 </html>
